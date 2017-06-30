@@ -1,9 +1,9 @@
 package main
 
 import (
-	"net/http"
 	"encoding/json"
 	"fmt"
+	"net/http"
 
 	"github.com/gorilla/mux"
 )
@@ -17,7 +17,7 @@ func createPackageRouter() *mux.Router {
 }
 
 func rootHandler(w http.ResponseWriter, r *http.Request) {
-
+	//TODO: BASIC IMPLEMENTATION
 }
 
 func createUser(w http.ResponseWriter, r *http.Request) {

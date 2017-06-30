@@ -22,7 +22,6 @@ func NewUser(firstName, lastName, email string) (*User, error) {
 		// Consider Regex or external Golang library
 		return nil, errors.New("Invalid Email")
 	}
-	return &User{FirstName:firstName, LastName:lastName, Email:email},
+	return &User{FirstName: firstName, LastName: lastName, Email: email},
 		nil
 }
-
