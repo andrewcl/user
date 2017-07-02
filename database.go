@@ -46,6 +46,24 @@ func addUser(db *sql.DB, firstName, lastName, email string) {
 	validateError(err)
 }
 
+func retrieveUsersByLastName(db *sql.DB, lastNameChar string) []User {
+	//stmt := fmt.Sprintf("SELECT * FROM %v WHERE LastName Like '?%'", DBUSERSTABLE)
+	stmt := fmt.Sprintf("SELECT LastName FROM %v'", DBUSERSTABLE)
+	rows, err := appDB.Query(stmt, lastNameChar)
+	validateError(err)
+
+	users := make([]User, 0)
+	for rows.Next() {
+		var u User
+		err = rows.Scan(&u.FirstName, &u.LastName, &u.Email)
+		//TODO: determine if custom error validator would be fine
+		validateError(err)
+
+		users = append(users, u)
+	}
+	return users
+}
+
 /// validateError checks a given error, logging and panicking in case of valid error.
 func validateError(err error) {
 	if err != nil {

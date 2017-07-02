@@ -2,32 +2,44 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
 
+const (
+	UserPostParamFirstName = "first_name"
+	UserPostParamLastName  = "last_name"
+	UserPostParamEmail     = "email"
+
+	UserGetParamStartingChar = "starting_char"
+)
+
 func createPackageRouter() *mux.Router {
 	r := mux.NewRouter()
-	r.HandleFunc("/", rootHandler).Methods("GET")
+	r.HandleFunc("/", handleRoot).Methods("GET")
 	r.HandleFunc("/users", createUser).Methods("POST")
 	r.HandleFunc("/users", searchUserNames).Methods("GET")
 	return r
 }
 
-func rootHandler(w http.ResponseWriter, r *http.Request) {
-	//TODO: BASIC IMPLEMENTATION
+func handleRoot(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" {
+		handleNotFoundRequest(w)
+	}
+
+	//TODO: serve testing / redirect webpage
 }
 
 func createUser(w http.ResponseWriter, r *http.Request) {
-	firstName := r.FormValue("first_name")
-	lastName := r.FormValue("last_name")
-	email := r.FormValue("email")
+	firstName := r.FormValue(UserPostParamFirstName)
+	lastName := r.FormValue(UserPostParamLastName)
+	email := r.FormValue(UserPostParamEmail)
 
 	user, err := NewUser(firstName, lastName, email)
 	if err != nil {
-		w.WriteHeader(http.StatusUnprocessableEntity)
+		handleBadRequest(w)
+		return
 	}
 
 	json.NewEncoder(w).Encode(user)
@@ -35,18 +47,20 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func searchUserNames(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
+	lastNameChar := r.URL.Query().Get(UserGetParamStartingChar)
 
-	fmt.Println("called function searchUserNames")
-
-	firstLetter := vars["first_character"]
-	fmt.Println(firstLetter)
-
-	user := User{
-		FirstName: "Andrew",
-		LastName:  "Liu",
-		Email:     "andrew@andrewcl.com",
+	if len(lastNameChar) < 1 {
+		handleBadRequest(w)
+		return
 	}
 
-	json.NewEncoder(w).Encode(user)
+	if len(lastNameChar) > 1 {
+		lastNameChar = string([]rune(lastNameChar)[0])
+	}
+
+	accessDB := appDB
+
+	users := retrieveUsersByLastName(accessDB, lastNameChar)
+	//		json.NewEncoder(w).Encode(users)
+	handleGetUsersRequest(w, users)
 }

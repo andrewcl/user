@@ -8,8 +8,6 @@ type User struct {
 	Email     string `json:"email"`
 }
 
-type Users []User
-
 func NewUser(firstName, lastName, email string) (*User, error) {
 	if firstName == "" {
 		return nil, errors.New("Invalid First Name")

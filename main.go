@@ -15,7 +15,7 @@ const (
 	DBUSERNAME   = "root"
 	DBPASSWORD   = "root"
 
-	APPPORT	= ":8080"
+	APPPORT = ":8080"
 )
 
 var appDB *sql.DB
