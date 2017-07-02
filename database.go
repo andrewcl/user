@@ -47,9 +47,10 @@ func addUser(db *sql.DB, u *User) error {
 }
 
 func retrieveLastNameUsers(db *sql.DB, lastNameChar string) ([]User, error) {
-	//stmt := fmt.Sprintf("SELECT * FROM %v WHERE LastName Like '?%'", DBUSERSTABLE)
-	stmt := fmt.Sprintf("SELECT LastName FROM %v'", DBUSERSTABLE)
-	rows, err := db.Query(stmt, lastNameChar)
+
+	stmt := "SELECT FirstName, LastName, Email FROM Users WHERE LastName LIKE 'c%'"
+	//stmt := fmt.Sprintf("SELECT * FROM %v WHERE LastName LIKE '?%'", DBUSERSTABLE)
+	rows, err := db.Query(stmt) //, lastNameChar)
 
 	if err != nil {
 		return nil, err
@@ -58,10 +59,10 @@ func retrieveLastNameUsers(db *sql.DB, lastNameChar string) ([]User, error) {
 	users := make([]User, 0)
 	for rows.Next() {
 		var u User
-		err = rows.Scan(&u.FirstName, &u.LastName, &u.Email)
+		_ = rows.Scan(&u.FirstName, &u.LastName, &u.Email)
 		users = append(users, u)
 	}
-	return users, err
+	return users, nil
 }
 
 /// validateError checks a given error, logging and panicking in case of valid error.

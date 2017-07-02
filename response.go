@@ -19,7 +19,7 @@ func handleClientResponse(w http.ResponseWriter, httpcode int, response []byte, 
 		jsonErr = fmt.Sprintf("\"error\": %q", err)
 	}
 	if response != nil || len(response) > 0 {
-		jsonResponse = "\"response\":%v"
+		jsonResponse = fmt.Sprintf("\"response\":%v", response)
 	}
 
 	fmt.Fprintf(w, "{%v, %v, %v}", jsonErr, jsonCode, jsonResponse)
