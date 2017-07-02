@@ -1,10 +1,11 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 const (
@@ -18,15 +19,15 @@ const (
 	APPPORT = ":8080"
 )
 
-var appDB *sql.DB
-
 func main() {
-	rootURI := fmt.Sprintf("%v:%v@%v/",
-		DBUSERNAME, DBPASSWORD, DBADDRESS)
-	appDB := createDatabase(DRIVERNAME, rootURI, DBNAME, DBUSERSTABLE)
-	addUser(appDB, "Andrew", "Liu", "andrew@andrewcl.com")
+	rootURI := fmt.Sprintf("%v:%v@%v/", DBUSERNAME, DBPASSWORD, DBADDRESS)
+	app := App{DB: createDatabase(DRIVERNAME, rootURI, DBNAME, DBUSERSTABLE)}
+	defer app.DB.Close()
 
-	router := createPackageRouter()
+	router := mux.NewRouter()
+	router.HandleFunc("/users", app.createUser).Methods("POST")
+	router.HandleFunc("/users", app.searchLastNames).Methods("GET")
+
 	http.Handle("/", router)
 	log.Fatal(http.ListenAndServe(APPPORT, nil))
 }

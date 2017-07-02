@@ -40,28 +40,28 @@ func createDatabase(driver, rootURI, dbName, tableName string) *sql.DB {
 	return db
 }
 
-func addUser(db *sql.DB, firstName, lastName, email string) {
+func addUser(db *sql.DB, u *User) error {
 	stmt := fmt.Sprintf("INSERT INTO %v (FirstName, LastName, Email) VALUES (?, ?, ?)", DBUSERSTABLE)
-	_, err := db.Exec(stmt, firstName, lastName, email)
-	validateError(err)
+	_, err := db.Exec(stmt, u.FirstName, u.LastName, u.Email)
+	return err
 }
 
-func retrieveUsersByLastName(db *sql.DB, lastNameChar string) []User {
+func retrieveLastNameUsers(db *sql.DB, lastNameChar string) ([]User, error) {
 	//stmt := fmt.Sprintf("SELECT * FROM %v WHERE LastName Like '?%'", DBUSERSTABLE)
 	stmt := fmt.Sprintf("SELECT LastName FROM %v'", DBUSERSTABLE)
-	rows, err := appDB.Query(stmt, lastNameChar)
-	validateError(err)
+	rows, err := db.Query(stmt, lastNameChar)
+
+	if err != nil {
+		return nil, err
+	}
 
 	users := make([]User, 0)
 	for rows.Next() {
 		var u User
 		err = rows.Scan(&u.FirstName, &u.LastName, &u.Email)
-		//TODO: determine if custom error validator would be fine
-		validateError(err)
-
 		users = append(users, u)
 	}
-	return users
+	return users, err
 }
 
 /// validateError checks a given error, logging and panicking in case of valid error.

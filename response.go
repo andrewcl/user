@@ -10,7 +10,19 @@ import (
 func handleClientResponse(w http.ResponseWriter, httpcode int, response []byte, err error) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(httpcode)
-	fmt.Fprintf(w, "{error:%v, code:%v, response:%v}", err, httpcode, response)
+
+	jsonErr := "\"error\": null"
+	jsonCode := fmt.Sprintf("\"code\":\"%v\"", httpcode)
+	jsonResponse := "\"response\": null"
+
+	if err != nil {
+		jsonErr = fmt.Sprintf("\"error\": %q", err)
+	}
+	if response != nil || len(response) > 0 {
+		jsonResponse = "\"response\":%v"
+	}
+
+	fmt.Fprintf(w, "{%v, %v, %v}", jsonErr, jsonCode, jsonResponse)
 }
 
 func handlePostUsersRequest(w http.ResponseWriter) {
