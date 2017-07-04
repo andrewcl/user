@@ -29,13 +29,13 @@ func (a *App) createUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	addUser(a.DB, user)
+	addUser(a.DB, *user)
 	if err != nil {
 		handleBadRequest(w)
 		return
 	}
 
-	handlePostUsersRequest(w)
+	handlePostUsersRequest(w, *user)
 }
 
 func (a *App) searchLastNames(w http.ResponseWriter, r *http.Request) {

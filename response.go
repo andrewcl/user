@@ -2,50 +2,34 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
-	"fmt"
 	"net/http"
 )
 
-func handleClientResponse(w http.ResponseWriter, httpcode int, response []byte, err error) {
+func handlePostUsersRequest(w http.ResponseWriter, user User) {
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(httpcode)
+	w.WriteHeader(http.StatusOK)
 
-	jsonErr := "\"error\": null"
-	jsonCode := fmt.Sprintf("\"code\":\"%v\"", httpcode)
-	jsonResponse := "\"response\": null"
-
-	if err != nil {
-		jsonErr = fmt.Sprintf("\"error\": %q", err)
-	}
-	if response != nil || len(response) > 0 {
-		jsonResponse = fmt.Sprintf("\"response\":%v", response)
-	}
-
-	fmt.Fprintf(w, "{%v, %v, %v}", jsonErr, jsonCode, jsonResponse)
-}
-
-func handlePostUsersRequest(w http.ResponseWriter) {
-	handleClientResponse(w, http.StatusOK, nil, nil)
+	_ = json.NewEncoder(w).Encode(user)
 }
 
 func handleGetUsersRequest(w http.ResponseWriter, users []User) {
-	userJSON, err := json.Marshal(users)
-	if err != nil {
-		//TODO: determine if error code more appropriate works here
-		handleBadRequest(w)
-	}
-	handleClientResponse(w, http.StatusOK, userJSON, nil)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	_ = json.NewEncoder(w).Encode(users)
 }
 
 /// handleBadRequest returns a json response with a 400 error code.
 /// Intended to invoked when invalid parameters are sent
 func handleBadRequest(w http.ResponseWriter) {
-	handleClientResponse(w, http.StatusBadRequest, nil, errors.New(
-		"Bad Request. The value for one of the URL parameters was invalid"))
+	http.Error(w,
+		"Bad Request. The value for one of the URL parameters was invalid",
+		http.StatusBadRequest)
 }
 
+/// handleNotFoundRequest handles misdirected or unavailable routes
 func handleNotFoundRequest(w http.ResponseWriter) {
-	handleClientResponse(w, http.StatusNotFound, nil, errors.New(
-		"Not Found: No API method associated with the URL path of the request"))
+	http.Error(w,
+		"Not Found: No API method associated with the URL path of the request",
+		http.StatusNotFound)
 }

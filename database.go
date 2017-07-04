@@ -40,7 +40,7 @@ func createDatabase(driver, rootURI, dbName, tableName string) *sql.DB {
 	return db
 }
 
-func addUser(db *sql.DB, u *User) error {
+func addUser(db *sql.DB, u User) error {
 	stmt := fmt.Sprintf("INSERT INTO %v (FirstName, LastName, Email) VALUES (?, ?, ?)", DBUSERSTABLE)
 	_, err := db.Exec(stmt, u.FirstName, u.LastName, u.Email)
 	return err
