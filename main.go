@@ -27,6 +27,7 @@ func main() {
 	addUser(app.DB, User{"Andrew", "Liu", "andrew@andrewcl.com"})
 	addUser(app.DB, User{"Leslie", "Chang", "leslie@chang.com"})
 	addUser(app.DB, User{"Jonathan", "Chang", "Jonathan@chang.com"})
+	addFakeUsers(app.DB, 3000)
 
 	router := mux.NewRouter()
 	router.HandleFunc("/users", app.createUser).Methods("POST")
