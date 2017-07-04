@@ -46,11 +46,14 @@ func addUser(db *sql.DB, u *User) error {
 	return err
 }
 
-func retrieveLastNameUsers(db *sql.DB, lastNameChar string) ([]User, error) {
+func retrieveLastNameUsers(db *sql.DB, lastNameString string) ([]User, error) {
+	//	stmt := "SELECT FirstName, LastName, Email FROM Users WHERE LastName LIKE 'c%'"
 
-	stmt := "SELECT FirstName, LastName, Email FROM Users WHERE LastName LIKE 'c%'"
-	//stmt := fmt.Sprintf("SELECT * FROM %v WHERE LastName LIKE '?%'", DBUSERSTABLE)
-	rows, err := db.Query(stmt) //, lastNameChar)
+	//stmt := fmt.Sprintf("SELECT FirstName, LastName, Email FROM %v WHERE LOWER(LastName) LIKE ? || '%%'", DBUSERSTABLE)
+	stmt := fmt.Sprintf("SELECT FirstName, LastName, Email "+
+		"FROM %v "+
+		"WHERE LEFT (LOWER(LastName), 1) = ?", DBUSERSTABLE)
+	rows, err := db.Query(stmt, lastNameString)
 
 	if err != nil {
 		return nil, err

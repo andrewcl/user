@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"net/http"
+	"strings"
 )
 
 const (
@@ -45,9 +46,13 @@ func (a *App) searchLastNames(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// truncate strings greater than one character
 	if len(lastNameChar) > 1 {
 		lastNameChar = string([]rune(lastNameChar)[0])
 	}
+
+	// convert string to lowercase
+	lastNameChar = strings.ToLower(lastNameChar)
 
 	users, err := retrieveLastNameUsers(a.DB, lastNameChar)
 	if err != nil {
