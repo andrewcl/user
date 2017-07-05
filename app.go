@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -12,6 +13,8 @@ const (
 	UserPostParamEmail     = "email"
 
 	UserGetParamStartingChar = "starting_char"
+	UserGetParamPage         = "page"
+	UserGetParamPerPage      = "per_page"
 )
 
 type App struct {
@@ -40,6 +43,8 @@ func (a *App) createUser(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) searchLastNames(w http.ResponseWriter, r *http.Request) {
 	lastNameChar := r.URL.Query().Get(UserGetParamStartingChar)
+	page := convertIntQueryParameter(r, UserGetParamPage, 0)
+	perPage := convertIntQueryParameter(r, UserGetParamPerPage, 10)
 
 	if len(lastNameChar) < 1 {
 		handleBadRequest(w)
@@ -54,10 +59,23 @@ func (a *App) searchLastNames(w http.ResponseWriter, r *http.Request) {
 	// convert string to lowercase
 	lastNameChar = strings.ToLower(lastNameChar)
 
-	users, err := retrieveLastNameUsers(a.DB, lastNameChar)
+	users, err := retrieveLastNameUsers(a.DB, lastNameChar, page, perPage)
 	if err != nil {
 		handleBadRequest(w)
 		return
 	}
 	handleGetUsersRequest(w, users)
+}
+
+func convertIntQueryParameter(r *http.Request, varName string, defaultVal int) int {
+	stringParam := r.URL.Query().Get(varName)
+	if stringParam == "" {
+		return defaultVal
+	}
+
+	if intParam, err := strconv.Atoi(stringParam); err == nil {
+		return intParam
+	}
+
+	return defaultVal
 }
