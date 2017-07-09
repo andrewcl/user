@@ -49,9 +49,11 @@ func addUser(db *sql.DB, u User) error {
 func retrieveLastNameUsers(db *sql.DB, lastNameString string, page, perPage int) ([]User, error) {
 	stmt := "SELECT FirstName, LastName, Email " +
 		"FROM " + DBUSERSTABLE +
-		" WHERE LEFT (LOWER(LastName), 1) = ?" +
+		" WHERE LEFT (LOWER(LastName), 1) = LOWER(?)" +
 		" LIMIT ? OFFSET ?"
+
 	rows, err := db.Query(stmt, lastNameString, perPage, page)
+	defer rows.Close()
 
 	if err != nil {
 		return nil, err
