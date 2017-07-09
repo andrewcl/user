@@ -28,6 +28,6 @@ func main() {
 	addFakeUsers(app.DB, 3000)
 
 	http.Handle("/", http.HandlerFunc(app.routeApiRouteRoot))
-	http.Handle("/users", http.HandlerFunc(app.routeApiRouteUser))
+	http.Handle("/users", timeLogHandler(recoveryHandler(http.HandlerFunc(app.routeApiRouteUser))))
 	log.Fatal(http.ListenAndServe(APPPORT, nil))
 }

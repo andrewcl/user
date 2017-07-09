@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"log"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -68,10 +67,3 @@ func retrieveLastNameUsers(db *sql.DB, lastNameString string, page, perPage int)
 	return users, nil
 }
 
-/// validateError checks a given error, logging and panicking in case of valid error.
-func validateError(err error) {
-	if err != nil {
-		log.Fatal(err)
-		panic(err)
-	}
-}
