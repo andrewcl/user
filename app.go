@@ -21,6 +21,22 @@ type App struct {
 	DB *sql.DB
 }
 
+func (a *App) routeApiRouteRoot(w http.ResponseWriter, r *http.Request) {
+	// Catch all non '/user' routes and throw Not Found Request
+	handleNotFoundRequest(w)
+}
+
+func (a *App) routeApiRouteUser(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		a.searchLastNames(w, r)
+	case http.MethodPost:
+		a.createUser(w, r)
+	default:
+		handleBadRequest(w)
+	}
+}
+
 func (a *App) createUser(w http.ResponseWriter, r *http.Request) {
 	firstName := r.FormValue(UserPostParamFirstName)
 	lastName := r.FormValue(UserPostParamLastName)

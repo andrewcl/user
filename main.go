@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-
-	"github.com/gorilla/mux"
 )
 
 const (
@@ -29,10 +27,7 @@ func main() {
 	addUser(app.DB, User{"Jonathan", "Chang", "Jonathan@chang.com"})
 	addFakeUsers(app.DB, 3000)
 
-	router := mux.NewRouter()
-	router.HandleFunc("/users", app.createUser).Methods("POST")
-	router.HandleFunc("/users", app.searchLastNames).Methods("GET")
-
-	http.Handle("/", router)
+	http.Handle("/", http.HandlerFunc(app.routeApiRouteRoot))
+	http.Handle("/users", http.HandlerFunc(app.routeApiRouteUser))
 	log.Fatal(http.ListenAndServe(APPPORT, nil))
 }
